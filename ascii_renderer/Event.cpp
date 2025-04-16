@@ -21,6 +21,50 @@ EventHandler::EventHandler()
 
 }
 
+bool EventHandler::WantRegainFocus() noexcept {
+	return std::exchange(Get().wantFocus, false);
+}
+
+void EventHandler::OnKeyPressed(unsigned char code) noexcept
+{
+	Get().keyStates[code] = true;
+}
+
+void EventHandler::OnKeyReleased(unsigned char code) noexcept
+{
+	Get().keyStates[code] = false;
+}
+
+void EventHandler::OnMouseMove(int x, int y) noexcept
+{
+	Get().mousePosition = { x, y };
+}
+
+void EventHandler::OnLeftPressed() noexcept
+{
+	Get().leftIsPressed = true;
+}
+
+void EventHandler::OnLeftReleased() noexcept
+{
+	Get().leftIsPressed = false;
+}
+
+void EventHandler::OnRightPressed() noexcept
+{
+	Get().rightIsPressed = true;
+}
+
+void EventHandler::OnRightReleased() noexcept
+{
+	Get().rightIsPressed = false;
+}
+
+void EventHandler::OnResize(int width, int height) noexcept
+{
+	Get().consoleSize = { width, height };
+}
+
 EventHandler& EventHandler::Get()
 {
 	static EventHandler instance;
@@ -32,40 +76,24 @@ EventHandler::~EventHandler()
 	SetConsoleMode(hInput_, oldInputMode_);
 }
 
-void EventHandler::ProcessEvents()
+void EventHandler::ProcessConsoleEvents() noexcept
 {
 	INPUT_RECORD ir;
 	DWORD read;
-	if (PeekConsoleInput(hInput_, &ir, 1, &read) && read > 0) {
-		ReadConsoleInput(hInput_, &ir, 1, &read);
+	if (PeekConsoleInput(Get().hInput_, &ir, 1, &read) && read > 0) {
+		ReadConsoleInput(Get().hInput_, &ir, 1, &read);
 
 		switch (ir.EventType) {
-		case KEY_EVENT: 
-		{
+		case KEY_EVENT: {
 			KEY_EVENT_RECORD keyEvent = ir.Event.KeyEvent;
-			keyStates[keyEvent.wVirtualKeyCode] = keyEvent.bKeyDown;
+			Get().wantFocus = (keyEvent.bKeyDown == TRUE);
 			break;
 		}
-		case MOUSE_EVENT:
-		{
-			MOUSE_EVENT_RECORD mouseEvent = ir.Event.MouseEvent;
-			mousePosition.first = mouseEvent.dwMousePosition.X;
-			mousePosition.second = mouseEvent.dwMousePosition.Y;
-
-			leftIsPressed = (mouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED);
-			rightIsPressed = (mouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED);
-	
+		case WINDOW_BUFFER_SIZE_EVENT: {
+			Get().consoleSize.first = ir.Event.WindowBufferSizeEvent.dwSize.X;
+			Get().consoleSize.second = ir.Event.WindowBufferSizeEvent.dwSize.Y;
 			break;
 		}
-		case WINDOW_BUFFER_SIZE_EVENT:
-		{
-			WINDOW_BUFFER_SIZE_RECORD sizeEvent = ir.Event.WindowBufferSizeEvent;
-			consoleSize.first = sizeEvent.dwSize.X;
-			consoleSize.second = sizeEvent.dwSize.Y;
-			break;
-		}
-		default:
-			break;
 		}
 	}
 }
@@ -90,8 +118,7 @@ std::pair<int, int> EventHandler::GetMousePosition() noexcept
 	return Get().mousePosition;
 }
 
-std::optional<std::pair<int, int>> EventHandler::GetConsoleSize() noexcept
+std::pair<int, int> EventHandler::GetConsoleSize() noexcept
 {
-	if (Get().consoleSize.first <= 0 || Get().consoleSize.second <= 0) return {};
 	return Get().consoleSize;
 }

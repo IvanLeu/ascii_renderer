@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Renderer.h"
-#include "Event.h"
+#include "ConsoleWindow.h"
 #include "Timer.h"
 #include "Camera.h"
 
@@ -18,15 +18,16 @@ public:
 	Application(const Application&) = delete;
 	Application& operator=(const Application&) = delete;
 	~Application();
-	void Run();
+	int Run();
 	void DrawSphere(const Sphere& sphere);
 private:
 	void Update_(float dt);
 	void ComposeFrame_();
 private:
-	Timer timer;
-	EventHandler eventHandler_;
+	bool running_ = true;
+	Timer timer_;
+	ConsoleWindow consoleWnd_;
 	Renderer renderer_;
 	Camera camera_;
-	Sphere sphere;
+	Sphere sphere_;
 };

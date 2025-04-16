@@ -1,7 +1,5 @@
 #include "Application.h"
-
-static int lastMouseX = 0;
-static int lastMouseY = 0;
+#include "Event.h"
 
 Application::Application()
 	:
@@ -13,54 +11,55 @@ Application::~Application()
 {
 }
 
-void Application::Run()
+int Application::Run()
 {
-	while (true) {
-		eventHandler_.ProcessEvents();
-		float dt = timer.Mark();
+	while (running_) {
+		EventHandler::ProcessConsoleEvents();
+		if (const auto opt = consoleWnd_.ProcessMessages()) {
+			running_ = false;
+			return *opt;
+		}
+
+		float dt = timer_.Mark();
 		Update_(dt);
 		ComposeFrame_();
 	}
+
+	return 0;
 }
 
 void Application::Update_(float dt)
 { 
-	auto optSz = eventHandler_.GetConsoleSize();
-	if (optSz.has_value()) {
-		auto [width, height] = *optSz;
+	auto [width, height] = EventHandler::GetConsoleSize();
+	if (width != 0 && height != 0) {
 		renderer_.Resize(width, height);
 		camera_.Resize(width, height, renderer_.GetAspectRatio());
 	}
+	
 
 	glm::vec3 dir{ 0.0f };
-	if (eventHandler_.KeyIsPressed('W')) {
+	if (EventHandler::KeyIsPressed('W')) {
 		dir.z += 1.0f;
 	}
-	if (eventHandler_.KeyIsPressed('A')) {
+	if (EventHandler::KeyIsPressed('A')) {
 		dir.x -= 1.0f;
 	}
-	if (eventHandler_.KeyIsPressed('S')) {
+	if (EventHandler::KeyIsPressed('S')) {
 		dir.z -= 1.0f;
 	}
-	if (eventHandler_.KeyIsPressed('D')) {
+	if (EventHandler::KeyIsPressed('D')) {
 		dir.x += 1.0f;
 	}
-	if (eventHandler_.KeyIsPressed('E')) {
+	if (EventHandler::KeyIsPressed('E')) {
 		dir.y -= 1.0f;
 	}
-	if (eventHandler_.KeyIsPressed('Q')) {
+	if (EventHandler::KeyIsPressed('Q')) {
 		dir.y += 1.0f;
 	}
 
-	int deltaX = eventHandler_.GetMousePosition().first - lastMouseX;
-	int deltaY = eventHandler_.GetMousePosition().second - lastMouseY;
-
 	camera_.Move(dt, dir);
-	camera_.Rotate(dt, deltaX, deltaY);
+	//camera_.Rotate(dt, deltaX, deltaY);
 	camera_.Update();
-
-	lastMouseX = eventHandler_.GetMousePosition().first;
-	lastMouseY = eventHandler_.GetMousePosition().second;
 }
 
 static char GetShadeCharacter(float distance, float radius) {
@@ -105,7 +104,7 @@ void Application::ComposeFrame_()
 {
 	renderer_.BeginFrame();
 
-	DrawSphere(sphere);
+	DrawSphere(sphere_);
 
 	renderer_.EndFrame();
 }

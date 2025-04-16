@@ -5,7 +5,7 @@ int main() {
 
 	try {
 		Application app;
-		app.Run();
+		return app.Run();
 	}
 	catch (std::exception& e) {
 		std::cerr << "Exception occured: " << e.what() << std::endl;
