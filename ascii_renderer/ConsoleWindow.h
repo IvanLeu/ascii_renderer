@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <functional>
 #include <optional>
+#include <vector>
 
 class ConsoleWindow {
 public:
@@ -24,4 +25,5 @@ private:
 	RECT consoleWindowRect_;
 	HINSTANCE hInst_;
 	static constexpr const char* className_ = "HiddenWindowClass";
+	std::vector<char> rawBuffer;
 };

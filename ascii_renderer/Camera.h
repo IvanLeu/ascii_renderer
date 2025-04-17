@@ -28,7 +28,7 @@ private:
 	int width_ = 0;
 	int height_ = 0;
 	float moveSpeed_ = 5.0f;
-	float rotationSpeed_ = 1.0f;
+	float rotationSpeed_ = 0.09f;
 	float aspectRatio_ = 1.0f;
 	float nearClip_ = 0.1f;
 	float farClip_ = 100.0f;

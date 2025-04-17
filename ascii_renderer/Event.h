@@ -3,9 +3,14 @@
 #include <Windows.h>
 #include <bitset>
 #include <optional>
+#include <queue>
 
 class EventHandler {
 	friend class ConsoleWindow;
+public:
+	struct RawDelta {
+		int x, y;
+	};
 public:
 	~EventHandler();
 	static void ProcessConsoleEvents() noexcept;
@@ -15,6 +20,8 @@ public:
 	static bool RMBIsPressed() noexcept;
 	static std::pair<int, int> GetMousePosition() noexcept;
 	static std::pair<int, int> GetConsoleSize() noexcept;
+	static std::optional<RawDelta> ReadRawDelta() noexcept;
+	static void ClearKeyStates() noexcept;
 private:
 	EventHandler();
 	EventHandler(const EventHandler&) = delete;
@@ -29,9 +36,12 @@ private:
 	static void OnRightPressed() noexcept;
 	static void OnRightReleased() noexcept;
 	static void OnResize(int width, int height) noexcept;
+	static void OnRawDelta(int deltaX, int deltaY) noexcept;
+	static void TrimRawBuffer() noexcept;
 private:
 	bool wantFocus = false;
 	static constexpr unsigned int nKeys = 256u;
+	static constexpr unsigned int bufferSize = 16u;
 	HANDLE hInput_;
 	DWORD oldInputMode_;
 	std::bitset<nKeys> keyStates;
@@ -39,4 +49,5 @@ private:
 	bool rightIsPressed = false;
 	std::pair<int, int> mousePosition{ 0, 0 };
 	std::pair<int, int> consoleSize{ 0, 0 };
+	std::queue<RawDelta> rawBuffer;
 };

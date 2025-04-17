@@ -65,6 +65,19 @@ void EventHandler::OnResize(int width, int height) noexcept
 	Get().consoleSize = { width, height };
 }
 
+void EventHandler::OnRawDelta(int deltaX, int deltaY) noexcept
+{
+	Get().rawBuffer.push({ deltaX, deltaY });
+	TrimRawBuffer();
+}
+
+void EventHandler::TrimRawBuffer() noexcept
+{
+	while (Get().rawBuffer.size() > Get().bufferSize) {
+		Get().rawBuffer.pop();
+	}
+}
+
 EventHandler& EventHandler::Get()
 {
 	static EventHandler instance;
@@ -121,4 +134,20 @@ std::pair<int, int> EventHandler::GetMousePosition() noexcept
 std::pair<int, int> EventHandler::GetConsoleSize() noexcept
 {
 	return Get().consoleSize;
+}
+
+std::optional<EventHandler::RawDelta> EventHandler::ReadRawDelta() noexcept
+{
+	if (!Get().rawBuffer.empty()) {
+		auto front = Get().rawBuffer.front();
+		Get().rawBuffer.pop();
+		return front;
+	}
+
+	return {};
+}
+
+void EventHandler::ClearKeyStates() noexcept
+{
+	Get().keyStates.reset();
 }

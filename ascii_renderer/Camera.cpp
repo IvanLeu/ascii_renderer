@@ -52,7 +52,7 @@ void Camera::Rotate(float dt, float deltaX, float deltaY) noexcept
 		float pitchDelta = deltaY * dt * rotationSpeed_;
 		float yawDelta = deltaX * dt * rotationSpeed_;
 
-		glm::quat q = glm::normalize(glm::angleAxis(-pitchDelta, rightDir_) * glm::angleAxis(-yawDelta, glm::vec3{ 0, 1, 0 }));
+		glm::quat q = glm::normalize(glm::angleAxis(pitchDelta, rightDir_) * glm::angleAxis(-yawDelta, glm::vec3{ 0, 1, 0 }));
 		forwardDir_ = glm::rotate(q, forwardDir_);
 
 		constexpr glm::vec3 upDir = { 0, 1, 0 };

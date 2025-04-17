@@ -46,6 +46,16 @@ ConsoleWindow::ConsoleWindow()
 	}
 
 	ShowWindow(hWnd_, SW_SHOW);
+
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01;          
+	rid.usUsage = 0x02;              
+	rid.dwFlags = RIDEV_INPUTSINK;
+	rid.hwndTarget = hWnd_;
+
+	if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE) {
+		throw std::runtime_error("Failed to register raw input devices");
+	}
 }
 
 std::optional<int> ConsoleWindow::ProcessMessages() noexcept
@@ -112,36 +122,47 @@ LRESULT ConsoleWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN: {
 		EventHandler::OnKeyPressed(static_cast<char>(wparam));
-		break;
-	}
+	} break;
 	case WM_SYSKEYUP:
 	case WM_KEYUP: {
 		EventHandler::OnKeyReleased(static_cast<char>(wparam));
-		break;
-	}
+	} break;
 	case WM_LBUTTONDOWN: {
 		EventHandler::OnLeftPressed();
-		break;
-	}
+	} break;
 	case WM_LBUTTONUP: {
 		EventHandler::OnLeftReleased();
-		break;
-	}
+	} break;
 	case WM_RBUTTONDOWN: {
 		EventHandler::OnRightPressed();
-		break;
-	}
+	} break;
 	case WM_RBUTTONUP: {
 		EventHandler::OnRightReleased();
-		break;
-	}
+	} break;
 	case WM_KILLFOCUS: {
 		SetFocusState(false);
-		break;
-	}
+		EventHandler::ClearKeyStates();
+	} break;
 	case WM_INPUT: {
-		break;
-	}
+		
+		UINT size;
+		if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1) {
+			break;
+		}
+
+		rawBuffer.resize(size);
+
+		if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, rawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) == -1) {
+			break;
+		}
+
+		auto& raw = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
+
+		if (raw.header.dwType == RIM_TYPEMOUSE && (raw.data.mouse.lLastX != 0 || raw.data.mouse.lLastY != 0)) {
+			EventHandler::OnRawDelta(raw.data.mouse.lLastX, raw.data.mouse.lLastY);
+		}
+
+	} break;
 	}
 
 	return DefWindowProc(hwnd, msg, wparam, lparam);

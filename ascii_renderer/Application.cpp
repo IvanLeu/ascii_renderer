@@ -57,8 +57,17 @@ void Application::Update_(float dt)
 		dir.y += 1.0f;
 	}
 
+	int deltaX = 0;
+	int deltaY = 0;
+	while (const auto& raw = EventHandler::ReadRawDelta()) {
+		if (raw.has_value()) {
+			deltaX = raw->x;
+			deltaY = raw->y;
+		}
+	}
+
 	camera_.Move(dt, dir);
-	//camera_.Rotate(dt, deltaX, deltaY);
+	camera_.Rotate(dt, static_cast<float>(deltaX), static_cast<float>(deltaY));
 	camera_.Update();
 }
 
