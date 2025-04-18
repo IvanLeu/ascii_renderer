@@ -91,6 +91,46 @@ void ConsoleWindow::SetFocusState(bool state) noexcept
 
 }
 
+void ConsoleWindow::EnableCursor() noexcept
+{
+	enabledCursor = true;
+	FreeCursor();
+	ShowCursor();
+}
+
+void ConsoleWindow::DisableCursor() noexcept
+{
+	enabledCursor = false;
+	ConfineCursor();
+	HideCursor();
+}
+
+bool ConsoleWindow::CursorEnabled() const noexcept
+{
+	return enabledCursor;
+}
+
+void ConsoleWindow::ShowCursor() const
+{
+	while (::ShowCursor(TRUE) < 0);
+}
+
+void ConsoleWindow::HideCursor() const
+{
+	while (::ShowCursor(FALSE) >= 0);
+}
+
+void ConsoleWindow::ConfineCursor() const
+{
+	RECT rect{ 0, 0, 0, 0};
+	ClipCursor(&rect);
+}
+
+void ConsoleWindow::FreeCursor() const
+{
+	ClipCursor(nullptr);
+}
+
 LRESULT ConsoleWindow::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
 {
 	if (msg == WM_NCCREATE) {
@@ -144,7 +184,10 @@ LRESULT ConsoleWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		EventHandler::ClearKeyStates();
 	} break;
 	case WM_INPUT: {
-		
+		if (CursorEnabled()) {
+			break;
+		}
+
 		UINT size;
 		if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1) {
 			break;

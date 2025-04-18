@@ -14,7 +14,10 @@ Application::~Application()
 int Application::Run()
 {
 	while (running_) {
-		EventHandler::ProcessConsoleEvents();
+		if (!consoleWnd_.IsFocused()) {
+			EventHandler::ProcessConsoleEvents();
+		}
+
 		if (const auto opt = consoleWnd_.ProcessMessages()) {
 			running_ = false;
 			return *opt;
@@ -36,6 +39,18 @@ void Application::Update_(float dt)
 		camera_.Resize(width, height, renderer_.GetAspectRatio());
 	}
 	
+	while (auto e = EventHandler::ReadKeyboard()) {
+		if (e->IsPressed()) {
+			if (e->code == VK_ESCAPE) {
+				if (!consoleWnd_.CursorEnabled()) {
+					consoleWnd_.EnableCursor();
+				}
+				else {
+					consoleWnd_.DisableCursor();
+				}
+			}
+		}
+	}
 
 	glm::vec3 dir{ 0.0f };
 	if (EventHandler::KeyIsPressed('W')) {

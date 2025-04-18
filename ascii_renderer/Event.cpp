@@ -28,11 +28,15 @@ bool EventHandler::WantRegainFocus() noexcept {
 void EventHandler::OnKeyPressed(unsigned char code) noexcept
 {
 	Get().keyStates[code] = true;
+	Get().keyboardBuffer.push({ EventHandler::KeyboardEvent::Type::IsPressed, code });
+	Get().TrimKeyboardBuffer();
 }
 
 void EventHandler::OnKeyReleased(unsigned char code) noexcept
 {
 	Get().keyStates[code] = false;
+	Get().keyboardBuffer.push({ EventHandler::KeyboardEvent::Type::IsReleased, code });
+	Get().TrimKeyboardBuffer();
 }
 
 void EventHandler::OnMouseMove(int x, int y) noexcept
@@ -68,10 +72,17 @@ void EventHandler::OnResize(int width, int height) noexcept
 void EventHandler::OnRawDelta(int deltaX, int deltaY) noexcept
 {
 	Get().rawBuffer.push({ deltaX, deltaY });
-	TrimRawBuffer();
+	Get().TrimRawBuffer();
 }
 
 void EventHandler::TrimRawBuffer() noexcept
+{
+	while (Get().rawBuffer.size() > Get().bufferSize) {
+		Get().rawBuffer.pop();
+	}
+}
+
+void EventHandler::TrimKeyboardBuffer() noexcept
 {
 	while (Get().rawBuffer.size() > Get().bufferSize) {
 		Get().rawBuffer.pop();
@@ -100,6 +111,11 @@ void EventHandler::ProcessConsoleEvents() noexcept
 		case KEY_EVENT: {
 			KEY_EVENT_RECORD keyEvent = ir.Event.KeyEvent;
 			Get().wantFocus = (keyEvent.bKeyDown == TRUE);
+
+			if (keyEvent.bKeyDown == TRUE) {
+				Get().OnKeyPressed(keyEvent.wVirtualKeyCode);
+			}
+
 			break;
 		}
 		case WINDOW_BUFFER_SIZE_EVENT: {
@@ -114,6 +130,18 @@ void EventHandler::ProcessConsoleEvents() noexcept
 bool EventHandler::KeyIsPressed(unsigned char code) noexcept
 {
 	return Get().keyStates[code];
+}
+
+std::optional<EventHandler::KeyboardEvent> EventHandler::ReadKeyboard() noexcept
+{
+	if (!Get().keyboardBuffer.empty()) {
+		auto e = Get().keyboardBuffer.front();
+		Get().keyboardBuffer.pop();
+
+		return e;
+	}
+
+	return {};
 }
 
 bool EventHandler::LMBIsPressed() noexcept
