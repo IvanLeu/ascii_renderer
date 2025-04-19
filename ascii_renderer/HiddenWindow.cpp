@@ -1,8 +1,8 @@
-#include "ConsoleWindow.h"
+#include "HiddenWindow.h"
 #include "Event.h"
 #include <stdexcept>
 
-ConsoleWindow::ConsoleWindow()
+HiddenWindow::HiddenWindow()
 	:
 	hInst_(GetModuleHandle(NULL)),
 	consoleHWND_(GetConsoleWindow())
@@ -58,7 +58,7 @@ ConsoleWindow::ConsoleWindow()
 	}
 }
 
-std::optional<int> ConsoleWindow::ProcessMessages() noexcept
+std::optional<int> HiddenWindow::ProcessMessages() noexcept
 {
 	if (!IsFocused()) {
 		SetFocusState(EventHandler::WantRegainFocus());
@@ -76,12 +76,12 @@ std::optional<int> ConsoleWindow::ProcessMessages() noexcept
 	return {};
 }
 
-bool ConsoleWindow::IsFocused() const noexcept
+bool HiddenWindow::IsFocused() const noexcept
 {
 	return focused_;
 }
 
-void ConsoleWindow::SetFocusState(bool state) noexcept
+void HiddenWindow::SetFocusState(bool state) noexcept
 {
 	focused_ = state;
 
@@ -91,54 +91,54 @@ void ConsoleWindow::SetFocusState(bool state) noexcept
 
 }
 
-void ConsoleWindow::EnableCursor() noexcept
+void HiddenWindow::EnableCursor() noexcept
 {
 	enabledCursor = true;
 	FreeCursor();
 	ShowCursor();
 }
 
-void ConsoleWindow::DisableCursor() noexcept
+void HiddenWindow::DisableCursor() noexcept
 {
 	enabledCursor = false;
 	ConfineCursor();
 	HideCursor();
 }
 
-bool ConsoleWindow::CursorEnabled() const noexcept
+bool HiddenWindow::CursorEnabled() const noexcept
 {
 	return enabledCursor;
 }
 
-void ConsoleWindow::ShowCursor() const
+void HiddenWindow::ShowCursor() const
 {
 	while (::ShowCursor(TRUE) < 0);
 }
 
-void ConsoleWindow::HideCursor() const
+void HiddenWindow::HideCursor() const
 {
 	while (::ShowCursor(FALSE) >= 0);
 }
 
-void ConsoleWindow::ConfineCursor() const
+void HiddenWindow::ConfineCursor() const
 {
 	RECT rect{ 0, 0, 0, 0};
 	ClipCursor(&rect);
 }
 
-void ConsoleWindow::FreeCursor() const
+void HiddenWindow::FreeCursor() const
 {
 	ClipCursor(nullptr);
 }
 
-LRESULT ConsoleWindow::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
+LRESULT HiddenWindow::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
 {
 	if (msg == WM_NCCREATE) {
 		const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lparam);
-		ConsoleWindow* const pWnd = static_cast<ConsoleWindow*>(pCreate->lpCreateParams);
+		HiddenWindow* const pWnd = static_cast<HiddenWindow*>(pCreate->lpCreateParams);
 
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
-		SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&ConsoleWindow::HandleMsgThunk));
+		SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&HiddenWindow::HandleMsgThunk));
 
 		return pWnd->HandleMsg(hwnd, msg, wparam, lparam);
 	}
@@ -146,14 +146,14 @@ LRESULT ConsoleWindow::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-LRESULT ConsoleWindow::HandleMsgThunk(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
+LRESULT HiddenWindow::HandleMsgThunk(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
 {
-	auto pWnd = reinterpret_cast<ConsoleWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	auto pWnd = reinterpret_cast<HiddenWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 	return pWnd->HandleMsg(hwnd, msg, wparam, lparam);
 }
 
-LRESULT ConsoleWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
+LRESULT HiddenWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept
 {
 	switch (msg) {
 	case WM_CLOSE:
@@ -184,7 +184,7 @@ LRESULT ConsoleWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		EventHandler::ClearKeyStates();
 	} break;
 	case WM_INPUT: {
-		if (CursorEnabled()) {
+		if (!EventHandler::RawEnabled()) {
 			break;
 		}
 
@@ -206,6 +206,20 @@ LRESULT ConsoleWindow::HandleMsg(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		}
 
 	} break;
+	case WM_ACTIVATE: {
+		if (!CursorEnabled()) {
+			if (wparam & WA_ACTIVE) {
+				ConfineCursor();
+				HideCursor();
+				EventHandler::EnableRaw();
+			}
+			else {
+				FreeCursor();
+				ShowCursor();
+				EventHandler::DisableRaw();
+			}
+		}
+	} break; 
 	}
 
 	return DefWindowProc(hwnd, msg, wparam, lparam);

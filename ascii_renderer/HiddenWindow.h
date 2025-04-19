@@ -5,12 +5,12 @@
 #include <optional>
 #include <vector>
 
-class ConsoleWindow {
+class HiddenWindow {
 public:
-	ConsoleWindow();
-	ConsoleWindow(const ConsoleWindow&) = delete;
-	ConsoleWindow& operator=(const ConsoleWindow&) = delete;
-	~ConsoleWindow() = default;
+	HiddenWindow();
+	HiddenWindow(const HiddenWindow&) = delete;
+	HiddenWindow& operator=(const HiddenWindow&) = delete;
+	~HiddenWindow() = default;
 	std::optional<int> ProcessMessages() noexcept;
 	bool IsFocused() const noexcept;
 	void SetFocusState(bool state) noexcept;

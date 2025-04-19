@@ -44,9 +44,11 @@ void Application::Update_(float dt)
 			if (e->code == VK_ESCAPE) {
 				if (!consoleWnd_.CursorEnabled()) {
 					consoleWnd_.EnableCursor();
+					EventHandler::DisableRaw();
 				}
 				else {
 					consoleWnd_.DisableCursor();
+					EventHandler::EnableRaw();
 				}
 			}
 		}

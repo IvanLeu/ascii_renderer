@@ -113,7 +113,7 @@ void EventHandler::ProcessConsoleEvents() noexcept
 			Get().wantFocus = (keyEvent.bKeyDown == TRUE);
 
 			if (keyEvent.bKeyDown == TRUE) {
-				Get().OnKeyPressed(keyEvent.wVirtualKeyCode);
+				Get().OnKeyPressed(static_cast<unsigned char>(keyEvent.wVirtualKeyCode));
 			}
 
 			break;
@@ -178,4 +178,19 @@ std::optional<EventHandler::RawDelta> EventHandler::ReadRawDelta() noexcept
 void EventHandler::ClearKeyStates() noexcept
 {
 	Get().keyStates.reset();
+}
+
+void EventHandler::EnableRaw() noexcept
+{
+	Get().rawEnabled = true;
+}
+
+void EventHandler::DisableRaw() noexcept
+{
+	Get().rawEnabled = false;
+}
+
+bool EventHandler::RawEnabled() noexcept
+{
+	return Get().rawEnabled;
 }

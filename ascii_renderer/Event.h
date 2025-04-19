@@ -6,7 +6,7 @@
 #include <queue>
 
 class EventHandler {
-	friend class ConsoleWindow;
+	friend class HiddenWindow;
 public:
 	struct KeyboardEvent {
 		enum class Type {
@@ -34,6 +34,9 @@ public:
 	static std::pair<int, int> GetConsoleSize() noexcept;
 	static std::optional<RawDelta> ReadRawDelta() noexcept;
 	static void ClearKeyStates() noexcept;
+	static void EnableRaw() noexcept;
+	static void DisableRaw() noexcept;
+	static bool RawEnabled() noexcept;
 private:
 	EventHandler();
 	EventHandler(const EventHandler&) = delete;
@@ -53,6 +56,7 @@ private:
 	static void TrimKeyboardBuffer() noexcept;
 private:
 	bool wantFocus = false;
+	bool rawEnabled = false;
 	static constexpr unsigned int nKeys = 256u;
 	static constexpr unsigned int bufferSize = 16u;
 	HANDLE hInput_;

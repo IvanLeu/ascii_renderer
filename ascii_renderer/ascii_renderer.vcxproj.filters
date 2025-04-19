@@ -33,7 +33,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleWindow.cpp">
+    <ClCompile Include="HiddenWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleWindow.h">
+    <ClInclude Include="HiddenWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

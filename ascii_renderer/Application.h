@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Renderer.h"
-#include "ConsoleWindow.h"
+#include "HiddenWindow.h"
 #include "Timer.h"
 #include "Camera.h"
 
@@ -26,7 +26,7 @@ private:
 private:
 	bool running_ = true;
 	Timer timer_;
-	ConsoleWindow consoleWnd_;
+	HiddenWindow consoleWnd_;
 	Renderer renderer_;
 	Camera camera_;
 	Sphere sphere_;
