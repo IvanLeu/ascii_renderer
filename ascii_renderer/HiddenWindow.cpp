@@ -1,6 +1,6 @@
 #include "HiddenWindow.h"
 #include "Event.h"
-#include <stdexcept>
+#include "Exception.h"
 
 HiddenWindow::HiddenWindow()
 	:
@@ -23,7 +23,7 @@ HiddenWindow::HiddenWindow()
 	wc.hIconSm = nullptr;
 
 	if (!RegisterClassEx(&wc)) {
-		throw std::runtime_error("Failed to register window class");
+		throw HR_EXCEPTION_LAST;
 	}
 
 	hWnd_ = CreateWindowEx(
@@ -42,7 +42,7 @@ HiddenWindow::HiddenWindow()
 	);
 
 	if (!hWnd_) {
-		throw std::runtime_error("Failed to create HWND");
+		throw HR_EXCEPTION_LAST;
 	}
 
 	ShowWindow(hWnd_, SW_SHOW);
@@ -54,7 +54,7 @@ HiddenWindow::HiddenWindow()
 	rid.hwndTarget = hWnd_;
 
 	if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE) {
-		throw std::runtime_error("Failed to register raw input devices");
+		throw HR_EXCEPTION_LAST;
 	}
 }
 

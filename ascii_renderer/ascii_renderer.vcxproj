@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Exception.cpp" />
     <ClCompile Include="HiddenWindow.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="main.cpp" />
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Exception.h" />
     <ClInclude Include="HiddenWindow.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Renderer.h" />

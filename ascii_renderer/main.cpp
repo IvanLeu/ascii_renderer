@@ -1,5 +1,6 @@
 #include "Application.h"
-#include <iostream>
+#include "Exception.h"
+#include <format>
 
 int main() {
 
@@ -7,11 +8,14 @@ int main() {
 		Application app;
 		return app.Run();
 	}
+	catch (Exception& e) {
+		MessageBox(NULL, e.what(), std::format("An {} occured!", e.GetType()).c_str(), MB_OK);
+	}
 	catch (std::exception& e) {
-		std::cerr << "Exception occured: " << e.what() << std::endl;
+		MessageBox(NULL, e.what(), "An exception occured!", MB_OK);
 	}
 	catch (...) {
-		std::cerr << "Unknown exception" << std::endl;
+		MessageBox(NULL, "Unknown exception", "Unhandled exception occured!", MB_OK);
 	}
 
 	return 0;

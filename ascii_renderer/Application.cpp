@@ -77,10 +77,8 @@ void Application::Update_(float dt)
 	int deltaX = 0;
 	int deltaY = 0;
 	while (const auto& raw = EventHandler::ReadRawDelta()) {
-		if (raw.has_value()) {
-			deltaX = raw->x;
-			deltaY = raw->y;
-		}
+		deltaX = raw->x;
+		deltaY = raw->y;
 	}
 
 	camera_.Move(dt, dir);
