@@ -30,8 +30,6 @@ private:
 	bool enabledCursor = true;
 	bool focused_ = true;
 	HWND hWnd_;
-	HWND consoleHWND_;
-	RECT consoleWindowRect_;
 	HINSTANCE hInst_;
 	static constexpr const char* className_ = "HiddenWindowClass";
 	std::vector<char> rawBuffer;

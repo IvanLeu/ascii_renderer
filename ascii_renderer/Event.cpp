@@ -1,22 +1,22 @@
 #include "Event.h"
-#include <stdexcept>
+#include "Exception.h"
 
 EventHandler::EventHandler()
 	:
 	hInput_(GetStdHandle(STD_INPUT_HANDLE))
 {
 	if (hInput_ == INVALID_HANDLE_VALUE) {
-		throw std::runtime_error("Could get standart input handle");
+		throw HR_EXCEPTION_LAST;
 	}
 
 	if (!GetConsoleMode(hInput_, &oldInputMode_)) {
-		throw std::runtime_error("Could get current console mode");
+		throw HR_EXCEPTION_LAST;
 	}
 
 	DWORD mode = oldInputMode_ | (ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
 	mode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_QUICK_EDIT_MODE);
 	if (!SetConsoleMode(hInput_, mode)) {
-		throw std::runtime_error("Could set console mode");;
+		throw HR_EXCEPTION_LAST;
 	}
 
 }
@@ -100,12 +100,14 @@ EventHandler::~EventHandler()
 	SetConsoleMode(hInput_, oldInputMode_);
 }
 
-void EventHandler::ProcessConsoleEvents() noexcept
+void EventHandler::ProcessConsoleEvents()
 {
 	INPUT_RECORD ir;
 	DWORD read;
 	if (PeekConsoleInput(Get().hInput_, &ir, 1, &read) && read > 0) {
-		ReadConsoleInput(Get().hInput_, &ir, 1, &read);
+		if (!ReadConsoleInput(Get().hInput_, &ir, 1, &read)) {
+			throw HR_EXCEPTION_LAST;
+		}
 
 		switch (ir.EventType) {
 		case KEY_EVENT: {

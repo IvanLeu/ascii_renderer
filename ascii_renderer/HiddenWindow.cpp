@@ -4,11 +4,8 @@
 
 HiddenWindow::HiddenWindow()
 	:
-	hInst_(GetModuleHandle(NULL)),
-	consoleHWND_(GetConsoleWindow())
+	hInst_(GetModuleHandle(NULL))
 {
-	GetWindowRect(consoleHWND_, &consoleWindowRect_);
-
 	WNDCLASSEX wc = {};
 	wc.cbSize = sizeof(wc);
 	wc.lpfnWndProc = HandleMsgSetup;

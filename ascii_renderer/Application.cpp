@@ -80,10 +80,12 @@ void Application::Update_(float dt)
 		deltaX = raw->x;
 		deltaY = raw->y;
 	}
-
-	camera_.Move(dt, dir);
-	camera_.Rotate(dt, static_cast<float>(deltaX), static_cast<float>(deltaY));
-	camera_.Update();
+	
+	if (!consoleWnd_.CursorEnabled()) {
+		camera_.Move(dt, dir);
+		camera_.Rotate(dt, static_cast<float>(deltaX), static_cast<float>(deltaY));
+		camera_.Update();
+	}
 }
 
 static char GetShadeCharacter(float distance, float radius) {

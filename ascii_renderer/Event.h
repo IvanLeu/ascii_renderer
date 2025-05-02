@@ -24,7 +24,7 @@ public:
 	};
 public:
 	~EventHandler();
-	static void ProcessConsoleEvents() noexcept;
+	static void ProcessConsoleEvents();
 	static EventHandler& Get();
 	static bool KeyIsPressed(unsigned char code) noexcept;
 	static std::optional<KeyboardEvent> ReadKeyboard() noexcept;
