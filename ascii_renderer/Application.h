@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Renderer.h"
-#include "HiddenWindow.h"
-#include "Timer.h"
-#include "Camera.h"
+#include "renderer.h"
+#include "hidden_window.h"
+#include "utils\timer.h"
+#include "camera.h"
 
 #include <glm\glm.hpp>
 
@@ -12,6 +12,8 @@ struct Sphere {
 	glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
 };
 
+namespace core
+{
 class Application {
 public:
 	Application();
@@ -25,9 +27,10 @@ private:
 	void ComposeFrame_();
 private:
 	bool running_ = true;
-	Timer timer_;
+	utils::Timer timer_;
 	HiddenWindow consoleWnd_;
 	Renderer renderer_;
 	Camera camera_;
 	Sphere sphere_;
 };
+}

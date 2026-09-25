@@ -1,5 +1,8 @@
-#include "Application.h"
-#include "Event.h"
+#include "application.h"
+#include "event.h"
+
+namespace core
+{
 
 Application::Application()
 	:
@@ -32,13 +35,13 @@ int Application::Run()
 }
 
 void Application::Update_(float dt)
-{ 
+{
 	auto [width, height] = EventHandler::GetConsoleSize();
 	if (width != 0 && height != 0) {
 		renderer_.Resize(width, height);
 		camera_.Resize(width, height, renderer_.GetAspectRatio());
 	}
-	
+
 	while (auto e = EventHandler::ReadKeyboard()) {
 		if (e->IsPressed()) {
 			if (e->code == VK_ESCAPE) {
@@ -80,7 +83,7 @@ void Application::Update_(float dt)
 		deltaX = raw->x;
 		deltaY = raw->y;
 	}
-	
+
 	if (!consoleWnd_.CursorEnabled()) {
 		camera_.Move(dt, dir);
 		camera_.Rotate(dt, static_cast<float>(deltaX), static_cast<float>(deltaY));
@@ -133,5 +136,7 @@ void Application::ComposeFrame_()
 	DrawSphere(sphere_);
 
 	renderer_.EndFrame();
+}
+
 }
 
