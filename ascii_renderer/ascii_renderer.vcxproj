@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="core\tracer\tracer.cpp" />
     <ClCompile Include="utils\exception.cpp" />
     <ClCompile Include="hidden_window.cpp" />
     <ClCompile Include="event.cpp" />
@@ -141,6 +142,9 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="core\tracer\trace_builder.h" />
+    <ClInclude Include="core\tracer\severity.h" />
+    <ClInclude Include="core\tracer\tracer.h" />
     <ClInclude Include="utils\exception.h" />
     <ClInclude Include="hidden_window.h" />
     <ClInclude Include="event.h" />

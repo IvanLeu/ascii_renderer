@@ -1,12 +1,23 @@
 #include "application.h"
 #include "utils\exception.h"
+#include "core\tracer\tracer.h"
 #include <format>
+
+using namespace core;
+
+void InitializeTracer()
+{
+    const auto log_path = std::filesystem::current_path().append("log/app_log.log");
+    g_tracer.Init(log_path, Severity::INFO);
+}
 
 int main()
 {
     using namespace core::utils;
     try
     {
+        InitializeTracer();
+
         core::Application app;
         return app.Run();
     }

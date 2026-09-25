@@ -1,6 +1,6 @@
 #include "exception.h"
-#include <sstream>
 #include <format>
+#include <sstream>
 
 namespace core::utils
 {
