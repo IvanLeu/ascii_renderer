@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace core
+namespace core::tracer
 {
 
 class Tracer
@@ -28,7 +28,7 @@ private:
     bool initialized_ = false;
     std::filesystem::path file_path_;
     std::ofstream log_file_;
-    Severity severity_ = Severity::NONE;
+    Severity severity_ = Severity::None;
 };
 
 } // namespace core

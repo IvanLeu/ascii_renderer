@@ -8,7 +8,7 @@ using namespace core;
 void InitializeTracer()
 {
     const auto log_path = std::filesystem::current_path().append("log\\app_log.log");
-    Tracer::Get().Init(log_path, Severity::Debug);
+    tracer::Tracer::Get().Init(log_path, tracer::Severity::Debug);
 }
 
 int main()

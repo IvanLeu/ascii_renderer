@@ -1,15 +1,37 @@
 #pragma once
 
-namespace core
+#include <string_view>
+#include <assert.h>
+
+namespace core::tracer
 {
 
 enum class Severity
 {
-    NONE,
+    None,
     Debug,
     Info,
     Warning,
     Error
 };
+
+// Use only for tracer
+constexpr std::string_view ToString(Severity sev) noexcept
+{
+    switch (sev)
+    {
+    case Severity::Debug:
+        return "DBG";
+    case Severity::Info:
+        return "INF";
+    case Severity::Warning:
+        return "WRN";
+    case Severity::Error:
+        return "ERR";
+    }
+
+    assert(false);
+    return "";
+}
 
 }

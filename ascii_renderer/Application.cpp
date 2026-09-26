@@ -1,147 +1,164 @@
 #include "application.h"
-#include "event.h"
 #include "core\tracer\tracer_macros.h"
+#include "event.h"
 
 namespace core
 {
 
 Application::Application()
-	:
-	camera_(renderer_.GetWidth(), renderer_.GetHeight(), renderer_.GetFontAspectRatio(), 45.0f, 0.1f, 100.0f)
+    : camera_(renderer_.GetWidth(), renderer_.GetHeight(),
+              renderer_.GetFontAspectRatio(), 45.0f, 0.1f, 100.0f)
 {
 }
 
-Application::~Application()
-{
-}
+Application::~Application() {}
 
 int Application::Run()
 {
-	while (running_) {
-		if (!consoleWnd_.IsFocused()) {
-			EventHandler::ProcessConsoleEvents();
-		}
+    while (running_)
+    {
+        if (!consoleWnd_.IsFocused())
+        {
+            EventHandler::ProcessConsoleEvents();
+        }
 
-		if (const auto opt = consoleWnd_.ProcessMessages()) {
-			running_ = false;
-			return *opt;
-		}
+        if (const auto opt = consoleWnd_.ProcessMessages())
+        {
+            running_ = false;
+            return *opt;
+        }
 
-		float dt = timer_.Mark();
-		Update_(dt);
-		ComposeFrame_();
-	}
+        float dt = timer_.Mark();
+        Update_(dt);
+        ComposeFrame_();
+    }
 
-	return 0;
+    return 0;
 }
 
 void Application::Update_(float dt)
 {
-	auto [width, height] = EventHandler::GetConsoleSize();
-	if (width != 0 && height != 0) {
-		renderer_.Resize(width, height);
-		camera_.Resize(width, height, renderer_.GetAspectRatio());
-	}
+    auto [width, height] = EventHandler::GetConsoleSize();
+    if (width != 0 && height != 0)
+    {
+        renderer_.Resize(width, height);
+        camera_.Resize(width, height, renderer_.GetAspectRatio());
+    }
 
-	while (auto e = EventHandler::ReadKeyboard()) {
-		if (e->IsPressed()) {
-			if (e->code == VK_ESCAPE) {
-				if (!consoleWnd_.CursorEnabled()) {
-					consoleWnd_.EnableCursor();
-					EventHandler::DisableRaw();
-				}
-				else {
-					consoleWnd_.DisableCursor();
-					EventHandler::EnableRaw();
-				}
-			}
-		}
-	}
+    while (auto e = EventHandler::ReadKeyboard())
+    {
+        if (e->IsPressed())
+        {
+            if (e->code == VK_ESCAPE)
+            {
+                if (!consoleWnd_.CursorEnabled())
+                {
+                    consoleWnd_.EnableCursor();
+                    EventHandler::DisableRaw();
+                }
+                else
+                {
+                    consoleWnd_.DisableCursor();
+                    EventHandler::EnableRaw();
+                }
+            }
+        }
+    }
 
-	glm::vec3 dir{ 0.0f };
-	if (EventHandler::KeyIsPressed('W')) {
-		dir.z += 1.0f;
-	}
-	if (EventHandler::KeyIsPressed('A')) {
-		dir.x -= 1.0f;
-	}
-	if (EventHandler::KeyIsPressed('S')) {
-		dir.z -= 1.0f;
-	}
-	if (EventHandler::KeyIsPressed('D')) {
-		dir.x += 1.0f;
-	}
-	if (EventHandler::KeyIsPressed('E')) {
-		dir.y -= 1.0f;
-	}
-	if (EventHandler::KeyIsPressed('Q')) {
-		dir.y += 1.0f;
-	}
+    glm::vec3 dir{0.0f};
+    if (EventHandler::KeyIsPressed('W'))
+    {
+        dir.z += 1.0f;
+    }
+    if (EventHandler::KeyIsPressed('A'))
+    {
+        dir.x -= 1.0f;
+    }
+    if (EventHandler::KeyIsPressed('S'))
+    {
+        dir.z -= 1.0f;
+    }
+    if (EventHandler::KeyIsPressed('D'))
+    {
+        dir.x += 1.0f;
+    }
+    if (EventHandler::KeyIsPressed('E'))
+    {
+        dir.y -= 1.0f;
+    }
+    if (EventHandler::KeyIsPressed('Q'))
+    {
+        dir.y += 1.0f;
+    }
 
-	int deltaX = 0;
-	int deltaY = 0;
-	while (const auto& raw = EventHandler::ReadRawDelta()) {
-		deltaX = raw->x;
-		deltaY = raw->y;
-	}
+    int deltaX = 0;
+    int deltaY = 0;
+    while (const auto& raw = EventHandler::ReadRawDelta())
+    {
+        deltaX = raw->x;
+        deltaY = raw->y;
+    }
 
-	if (!consoleWnd_.CursorEnabled()) {
-		camera_.Move(dt, dir);
-		camera_.Rotate(dt, static_cast<float>(deltaX), static_cast<float>(deltaY));
-		camera_.Update();
-	}
+    if (!consoleWnd_.CursorEnabled())
+    {
+        camera_.Move(dt, dir);
+        camera_.Rotate(dt, static_cast<float>(deltaX),
+                       static_cast<float>(deltaY));
+        camera_.Update();
+    }
 }
 
-static char GetShadeCharacter(float distance, float radius) {
-	std::vector<char> shades = { '@', '%', '#', '*', '+', '=', '-', '.' };
-	const float maxDistance = radius;
-	if (distance < 0.0f)
-		distance = 0.0f;
-	if (distance > maxDistance)
-		distance = maxDistance;
+static char GetShadeCharacter(float distance, float radius)
+{
+    std::vector<char> shades = {'@', '%', '#', '*', '+', '=', '-', '.'};
+    const float maxDistance = radius;
+    if (distance < 0.0f)
+        distance = 0.0f;
+    if (distance > maxDistance)
+        distance = maxDistance;
 
-	float t = distance / maxDistance;
-	int index = static_cast<int>(t * (shades.size() - 1));
-	return shades[index];
+    float t = distance / maxDistance;
+    int index = static_cast<int>(t * (shades.size() - 1));
+    return shades[index];
 }
 
-void Application::DrawSphere(const Sphere& sphere) {
-	for (int y = 0; y < renderer_.GetHeight(); ++y) {
-		for (int x = 0; x < renderer_.GetWidth(); ++x) {
+void Application::DrawSphere(const Sphere& sphere)
+{
+    for (int y = 0; y < renderer_.GetHeight(); ++y)
+    {
+        for (int x = 0; x < renderer_.GetWidth(); ++x)
+        {
 
-			glm::vec3 dir = camera_.GetRayDirections()[x + y * renderer_.GetWidth()];
+            glm::vec3 dir =
+                camera_.GetRayDirections()[x + y * renderer_.GetWidth()];
 
-			glm::vec3 origin = camera_.GetPosition() - sphere.pos;
+            glm::vec3 origin = camera_.GetPosition() - sphere.pos;
 
-			constexpr const float a = 1.0f;
-			const float b = 2.0f * glm::dot(origin, dir);
-			const float c = glm::dot(origin, origin) - sphere.r * sphere.r;
+            constexpr const float a = 1.0f;
+            const float b = 2.0f * glm::dot(origin, dir);
+            const float c = glm::dot(origin, origin) - sphere.r * sphere.r;
 
-			const float D = b * b - 4 * a * c;
-			if (D < 0.0f) {
-				continue;
-			}
+            const float D = b * b - 4 * a * c;
+            if (D < 0.0f)
+            {
+                continue;
+            }
 
-			const float closestHit = (-b - sqrt(D)) / (2.0f * a);
-			char shade = GetShadeCharacter(closestHit, sphere.r);
+            const float closestHit = (-b - sqrt(D)) / (2.0f * a);
+            char shade = GetShadeCharacter(closestHit, sphere.r);
 
-			renderer_.PutChar(x, y, shade);
-		}
-	}
+            renderer_.PutChar(x, y, shade);
+        }
+    }
 }
 
 void Application::ComposeFrame_()
 {
-	renderer_.BeginFrame();
+    renderer_.BeginFrame();
 
-	DrawSphere(sphere_);
+    DrawSphere(sphere_);
 
-	renderer_.EndFrame();
-
-	static size_t i = 0;
-
-	TRACE_INFO() << TRACE_CURRENT_FUNCTION ": End of frame - " << i++;
+    renderer_.EndFrame();
 }
 
-}
-
+} // namespace core
