@@ -6,10 +6,10 @@ namespace core
 enum class Severity
 {
     NONE,
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR
+    Debug,
+    Info,
+    Warning,
+    Error
 };
 
 }

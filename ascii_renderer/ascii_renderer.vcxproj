@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="core\tracer\tracer_macros.h" />
     <ClInclude Include="core\tracer\trace_builder.h" />
     <ClInclude Include="core\tracer\severity.h" />
     <ClInclude Include="core\tracer\tracer.h" />

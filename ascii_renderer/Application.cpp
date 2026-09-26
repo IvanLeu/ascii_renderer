@@ -1,5 +1,6 @@
 #include "application.h"
 #include "event.h"
+#include "core\tracer\tracer_macros.h"
 
 namespace core
 {
@@ -136,6 +137,10 @@ void Application::ComposeFrame_()
 	DrawSphere(sphere_);
 
 	renderer_.EndFrame();
+
+	static size_t i = 0;
+
+	TRACE_INFO() << TRACE_CURRENT_FUNCTION ": End of frame - " << i++;
 }
 
 }
