@@ -15,7 +15,6 @@ enum class Severity
     Error
 };
 
-// Use only for tracer
 constexpr std::string_view ToString(Severity sev) noexcept
 {
     switch (sev)
