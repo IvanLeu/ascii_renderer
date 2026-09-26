@@ -7,7 +7,14 @@ using namespace core;
 
 void InitializeTracer()
 {
-    const auto log_path = std::filesystem::current_path().append("log\\app_log.log");
+    const auto now = std::chrono::system_clock::now();
+    const auto local_time = std::chrono::current_zone()->to_local(now);
+    const auto time_s =
+        std::chrono::floor<std::chrono::seconds>(local_time);
+    
+    const auto log_filename = std::format("ascii_renderer_{:%d.%m.%Y_%H.%M.%S}.log", time_s);
+
+    const auto log_path = std::filesystem::current_path().append("log").append(log_filename);
     tracer::Tracer::Get().Init(log_path, tracer::Severity::Debug);
 }
 
