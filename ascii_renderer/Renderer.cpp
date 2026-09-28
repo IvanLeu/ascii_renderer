@@ -1,5 +1,5 @@
 #include "renderer.h"
-#include "utils\exception.h"
+#include "core\utils\exception.h"
 #include <assert.h>
 
 namespace core

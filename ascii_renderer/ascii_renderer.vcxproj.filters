@@ -33,10 +33,13 @@
     <ClCompile Include="hidden_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utils\exception.cpp">
+    <ClCompile Include="core\tracer\tracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utils\timer.cpp">
+    <ClCompile Include="core\utils\exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utils\timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,13 +59,25 @@
     <ClInclude Include="hidden_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\exception.h">
+    <ClInclude Include="core\tracer\tracer_macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\timer.h">
+    <ClInclude Include="core\tracer\trace_builder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\utility_classes.h">
+    <ClInclude Include="core\tracer\severity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\tracer\tracer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utils\exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utils\timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utils\utility_classes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

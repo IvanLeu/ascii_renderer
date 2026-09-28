@@ -2,7 +2,7 @@
 
 #include "severity.h"
 #include "tracer.h"
-#include "../../utils/utility_classes.h"
+#include "../../core/utils/utility_classes.h"
 #include <format>
 #include <array>
 #include <chrono>

@@ -132,12 +132,12 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="core\tracer\tracer.cpp" />
-    <ClCompile Include="utils\exception.cpp" />
+    <ClCompile Include="core\utils\exception.cpp" />
+    <ClCompile Include="core\utils\timer.cpp" />
     <ClCompile Include="hidden_window.cpp" />
     <ClCompile Include="event.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="renderer.cpp" />
-    <ClCompile Include="utils\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -146,12 +146,13 @@
     <ClInclude Include="core\tracer\trace_builder.h" />
     <ClInclude Include="core\tracer\severity.h" />
     <ClInclude Include="core\tracer\tracer.h" />
-    <ClInclude Include="utils\exception.h" />
+    <ClInclude Include="core\utils\assert.h" />
+    <ClInclude Include="core\utils\exception.h" />
+    <ClInclude Include="core\utils\timer.h" />
+    <ClInclude Include="core\utils\utility_classes.h" />
     <ClInclude Include="hidden_window.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="renderer.h" />
-    <ClInclude Include="utils\timer.h" />
-    <ClInclude Include="utils\utility_classes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

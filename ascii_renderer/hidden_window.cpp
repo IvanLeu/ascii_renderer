@@ -1,6 +1,6 @@
 #include "hidden_window.h"
 #include "event.h"
-#include "utils\exception.h"
+#include "core\utils\exception.h"
 
 namespace core
 {

@@ -1,5 +1,6 @@
 #include "application.h"
 #include "core\tracer\tracer_macros.h"
+#include "core\utils\assert.h"
 #include "event.h"
 
 namespace core
@@ -110,8 +111,11 @@ void Application::Update_(float dt)
 
 static char GetShadeCharacter(float distance, float radius)
 {
+    TRACE_DEBUG() << TRACE_CURRENT_FUNCTION ": Distance: " << distance
+                 << ". Radius: " << radius << ".";
+
     std::vector<char> shades = {'@', '%', '#', '*', '+', '=', '-', '.'};
-    const float maxDistance = radius;
+    const float maxDistance = radius * 5;
     if (distance < 0.0f)
         distance = 0.0f;
     if (distance > maxDistance)

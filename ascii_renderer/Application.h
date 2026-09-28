@@ -2,7 +2,7 @@
 
 #include "renderer.h"
 #include "hidden_window.h"
-#include "utils\timer.h"
+#include "core\utils\timer.h"
 #include "camera.h"
 
 #include <glm\glm.hpp>

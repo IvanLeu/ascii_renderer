@@ -1,5 +1,5 @@
 #include "application.h"
-#include "utils\exception.h"
+#include "core\utils\exception.h"
 #include "core\tracer\tracer.h"
 #include <format>
 
@@ -15,7 +15,7 @@ void InitializeTracer()
     const auto log_filename = std::format("ascii_renderer_{:%d.%m.%Y_%H.%M.%S}.log", time_s);
 
     const auto log_path = std::filesystem::current_path().append("log").append(log_filename);
-    tracer::Tracer::Get().Init(log_path, tracer::Severity::Debug);
+    tracer::Tracer::Get().Init(log_path, tracer::Severity::Info);
 }
 
 int main()
