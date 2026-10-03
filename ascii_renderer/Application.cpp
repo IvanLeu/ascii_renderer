@@ -3,8 +3,34 @@
 #include "core\utils\assert.h"
 #include "event.h"
 
+#include <glm\vec3.hpp>
+#include <algorithm>
+#include <array>
+#include <cmath>
+
 namespace core
 {
+
+namespace
+{
+
+char GetShadeCharacter(const glm::vec3& spherePos, const glm::vec3& fragPos,
+                       const glm::vec3& lightDir)
+{
+    static constexpr std::array shades = {
+        ' ', '.', ',', ':', '-', '~', '=', '+',
+        'o', '*', '#', '8', '%', 'B', 'M', '@'};
+
+    const auto normal = glm::normalize(fragPos - spherePos);
+    const float intensity = glm::dot(normal, lightDir);
+    const float intensityNormalized = std::clamp(intensity, 0.0f, 1.0f);
+    const int index = static_cast<int>(
+        intensityNormalized * static_cast<float>(shades.size() - 1));
+
+    return shades[index];
+}
+
+}
 
 Application::Application()
     : camera_(renderer_.GetWidth(), renderer_.GetHeight(),
@@ -109,25 +135,11 @@ void Application::Update_(float dt)
     }
 }
 
-static char GetShadeCharacter(float distance, float radius)
-{
-    TRACE_DEBUG() << TRACE_CURRENT_FUNCTION ": Distance: " << distance
-                 << ". Radius: " << radius << ".";
-
-    std::vector<char> shades = {'@', '%', '#', '*', '+', '=', '-', '.'};
-    const float maxDistance = radius * 5;
-    if (distance < 0.0f)
-        distance = 0.0f;
-    if (distance > maxDistance)
-        distance = maxDistance;
-
-    float t = distance / maxDistance;
-    int index = static_cast<int>(t * (shades.size() - 1));
-    return shades[index];
-}
-
 void Application::DrawSphere(const Sphere& sphere)
 {
+    const auto LightDir =
+        glm::normalize(glm::vec3{-1.0f, 1.0f, 1.0f});
+
     for (int y = 0; y < renderer_.GetHeight(); ++y)
     {
         for (int x = 0; x < renderer_.GetWidth(); ++x)
@@ -148,8 +160,15 @@ void Application::DrawSphere(const Sphere& sphere)
                 continue;
             }
 
-            const float closestHit = (-b - sqrt(D)) / (2.0f * a);
-            char shade = GetShadeCharacter(closestHit, sphere.r);
+            const float closestHitLen = (-b - std::sqrt(D)) / (2.0f * a);
+
+            if (closestHitLen <= 0.0f)
+            {
+                continue;
+            }
+
+            const auto closestHitVec = origin + dir * closestHitLen;
+            char shade = GetShadeCharacter(sphere.pos, closestHitVec, LightDir);
 
             renderer_.PutChar(x, y, shade);
         }

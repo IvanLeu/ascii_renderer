@@ -8,7 +8,7 @@
 #include <glm\glm.hpp>
 
 struct Sphere {
-	float r = 0.5f;
+	float r = 0.75f;
 	glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
 };
 
